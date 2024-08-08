@@ -1,26 +1,75 @@
 import * as React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import colors from '../../../assets/colors';
 import FastImage from 'react-native-fast-image';
 import { Icon, LinearProgress } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import DocumentPicker from 'react-native-document-picker';
+import { check, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import strings from '../../../assets/strings';
+import { predictCottonDisease, updateImageUri } from '../../redux/slices/diseasePredictSlice';
+import { showAlertMessage } from '../../utils';
 
 function Home() {
 
     const navigate = useNavigation();
+    const dispatch = useDispatch();
 
     const diseaseProdictProps = useSelector(state => state.diseasePredictProps)
-
-    console.log("diseaseProdictProps", diseaseProdictProps)
-
 
     const onClickCamera = () => {
         navigate.navigate("CameraScreen");
     }
 
-    const onClickGallery = () => {
+    const clickViewMore = (desc) => {
+        console.log("data desc", desc)
+        showAlertMessage(strings.app_name, desc)
+    }
 
+    const checkForStoragePermission = () => {
+        return new Promise((resolve) => {
+            check(PERMISSIONS.ANDROID.READ_EXTERNAL_STORAGE)
+                .then((result) => {
+                    switch (result) {
+                        case RESULTS.UNAVAILABLE:
+                        case RESULTS.DENIED:
+                        case RESULTS.LIMITED:
+                        case RESULTS.BLOCKED:
+                            resolve(true);
+                            break;
+                        case RESULTS.GRANTED:
+                            resolve(false);
+                            break;
+                    }
+                })
+                .catch((error) => {
+                    resolve(false);
+                });
+        })
+    }
+
+    const onClickGallery = async () => {
+        const permission = checkForStoragePermission();
+        if (permission) {
+            let result = await DocumentPicker.pick({
+                allowMultiSelection: false,
+                type: [
+                    DocumentPicker.types.images
+                ]
+            });
+            if (result?.length > 0) {
+                result = result[0];
+                console.log("onClickGallery", result);
+                const data = { uri: result.uri };
+                dispatch(updateImageUri(result.uri));
+                dispatch(predictCottonDisease(data));
+            } else {
+                showAlertMessage(strings.app_name, `Invalid Image\nअमान्य छवि`);
+            }
+        } else {
+            showAlertMessage(strings.app_name, `Storage permission not given.\nभंडारण की अनुमति नहीं दी गई!`);
+        }
     }
 
 
@@ -85,60 +134,72 @@ function Home() {
                         </> : null
                     }
                     {(!diseaseProdictProps.loading && diseaseProdictProps.status && diseaseProdictProps.data) ?
-                        <View style={styles.result_container}>
-                            <View style={styles.result_wrapper}>
-                                <Text style={[
-                                    styles.result_text,
-                                    { width: "32%", textAlign: "left" }
-                                ]}>
-                                    {`Test Prediction\nपरिक्षण अनुमान`}
-                                </Text>
-                                <View
-                                    style={{
-                                        width: "15%"
-                                    }}
-                                >
-                                    <Icon
-                                        type={"material-community"}
-                                        name='arrow-right'
-                                        size={30}
-                                        color={colors.textColorPrimary}
-                                    />
+                        <>
+                            <View style={styles.result_container}>
+                                <View style={styles.result_wrapper}>
+                                    <Text style={[
+                                        styles.result_text,
+                                        { width: "32%", textAlign: "left" }
+                                    ]}>
+                                        {`Test Prediction\nपरिक्षण अनुमान`}
+                                    </Text>
+                                    <View
+                                        style={{
+                                            width: "15%"
+                                        }}
+                                    >
+                                        <Icon
+                                            type={"material-community"}
+                                            name='arrow-right'
+                                            size={30}
+                                            color={colors.textColorPrimary}
+                                        />
+                                    </View>
+                                    <Text style={[
+                                        styles.result_text,
+                                        { width: "48%", textAlign: "left" }
+                                    ]}>
+                                        {`${diseaseProdictProps.data.english}\n${diseaseProdictProps.data.hindi}`}
+                                    </Text>
                                 </View>
-                                <Text style={[
-                                    styles.result_text,
-                                    { width: "48%", textAlign: "left" }
-                                ]}>
-                                    {`${diseaseProdictProps.data.english}\n${diseaseProdictProps.data.hindi}`}
-                                </Text>
-                            </View>
-                            <View style={styles.result_wrapper}>
-                                <Text style={[
-                                    styles.result_text,
-                                    { width: "32%", textAlign: "left" }
-                                ]}>
-                                    {`Test Prediction\nपरिक्षण अनुमान`}
-                                </Text>
-                                <View
-                                    style={{
-                                        width: "15%"
-                                    }}
-                                >
-                                    <Icon
-                                        type={"material-community"}
-                                        name='arrow-right'
-                                        size={30}
-                                        color={colors.textColorPrimary}
-                                    />
+                                <View style={styles.result_wrapper}>
+                                    <Text style={[
+                                        styles.result_text,
+                                        { width: "32%", textAlign: "left" }
+                                    ]}>
+                                        {`Test Prediction\nपरिक्षण अनुमान`}
+                                    </Text>
+                                    <View
+                                        style={{
+                                            width: "15%"
+                                        }}
+                                    >
+                                        <Icon
+                                            type={"material-community"}
+                                            name='arrow-right'
+                                            size={30}
+                                            color={colors.textColorPrimary}
+                                        />
+                                    </View>
+                                    <Text style={[
+                                        styles.result_text,
+                                        { width: "48%", textAlign: "left" }
+                                    ]}>
+                                        {`${diseaseProdictProps.data.probability}%`}
+                                    </Text>
                                 </View>
-                                <Text style={[
-                                    styles.result_text,
-                                    { width: "48%", textAlign: "left" }
-                                ]}>
-                                    {`${diseaseProdictProps.data.probability}%`}
-                                </Text>
                             </View>
-                        </View>
+                            <TouchableOpacity
+                                style={styles.detail_wrapper}
+                                onPress={() => clickViewMore(diseaseProdictProps.data.hindi_desc)}
+                            >
+                                <Text
+                                    style={styles.detail_text}
+                                >
+                                    {`View Detail / विस्तार से देखें`}
+                                </Text>
+                            </TouchableOpacity>
+                        </>
                         : null
                     }
                 </View>
@@ -228,6 +289,16 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: colors.textColorPrimary
     },
+    detail_wrapper: {
+        marginVertical: 12,
+        backgroundColor: "#9CCC65",
+        padding: 6,
+        borderRadius: 6
+    },
+    detail_text: {
+        fontSize: 16,
+        color: "#FFF"
+    }
 })
 
 export default Home;

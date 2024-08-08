@@ -1,6 +1,6 @@
 export default {
-    colorPrimary: "#C8E6C9",
-    colorSecondary: "#F1F8E9",
+    colorPrimary: "#C5E1A5",
+    colorSecondary: "#DCEDC8",
     colorAssets: "#81C784",
     colorButton: "#81C784",
     colorBlack: "#000",

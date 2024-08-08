@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import strings from "../../../assets/strings";
+import { showAlertMessage } from "../../utils";
 
 const cotton_prediction_classes = {
     "bacterial_blight": {
@@ -96,6 +98,7 @@ const diseaseProdictProps = createSlice({
                 state.loading = false;
                 state.status = false;
                 state.error = action.payload;
+                showAlertMessage(strings.app_name, `Failed to test, Try Again\nपरीक्षण विफल रहा, फिर से प्रयास करें!`)
             })
             .addCase(predictCottonDisease.pending, (state) => {
                 console.log("request predict pending")
