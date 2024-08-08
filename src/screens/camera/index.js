@@ -3,15 +3,19 @@ import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Camera } from 'react-native-vision-camera';
 import colors from '../../../assets/colors';
 import FastImage from 'react-native-fast-image';
+import { predictCottonDisease, updateImageUri } from '../../redux/slices/diseasePredictSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 
 const CameraScreen = () => {
     const camera = useRef()
+    const navigation = useNavigation()
+    const dispatch = useDispatch()
     const [cameraPermission, setCameraPermission] = useState(false);
     const [backCamera, setBackCamera] = useState(null);
     const [imageUri, setImageUri] = useState(null);
     const [captureError, setCaptureError] = useState(null);
 
-    console.log("photo imageUri", imageUri);
 
     const fetchDevices = async () => {
         const availableDevices = Camera.getAvailableCameraDevices();
@@ -25,7 +29,7 @@ const CameraScreen = () => {
         try {
             const photo = await camera.current.takePhoto();
             if (photo?.path) {
-                setImageUri(photo.path)
+                setImageUri(`file://${photo.path}`)
             } else {
                 setCaptureError('Failed to capture image!');
             }
@@ -33,6 +37,19 @@ const CameraScreen = () => {
             console.log("image capture error", err);
             setCaptureError('Failed to capture image!');
         }
+    }
+
+    const testLeaf = async () => {
+        const data = { uri: imageUri };
+        dispatch(updateImageUri(imageUri));
+        dispatch(predictCottonDisease(data));
+        if (navigation.canGoBack()) {
+            navigation.goBack();
+        }
+    }
+
+    const retakePhoto = async () => {
+        setImageUri(null);
     }
 
     useEffect(() => {
@@ -73,21 +90,37 @@ const CameraScreen = () => {
                     style={{ width: "100%", height: "100%", resizeMode: "cover" }}
                     source={{ uri: imageUri }}
                 />
-                <TouchableOpacity
-                    style={{ position: 'absolute', bottom: 36, alignSelf: 'center', flexDirection: "row", justifyContent: "space-between" }}
+                <View
+                    style={{
+                        position: 'absolute',
+                        bottom: 36,
+                        alignSelf: 'center',
+                        flexDirection: "row",
+                        justifyContent: "space-between"
+                    }}
                     onPress={onCapture}
                 >
-                    <Text
-                        style={styles.button_text}
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={testLeaf}
                     >
-                        TEST
-                    </Text>
-                    <Text
-                        style={styles.button_text}
+                        <Text
+                            style={styles.button_text}
+                        >
+                            {`TEST LEAF\nपत्ती का परीक्षण करें!`}
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={retakePhoto}
                     >
-                        RETAKE
-                    </Text>
-                </TouchableOpacity>
+                        <Text
+                            style={styles.button_text}
+                        >
+                            {`RETAKE PHOTO\nफोटो दोबारा लें!`}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     }
@@ -109,9 +142,12 @@ const CameraScreen = () => {
                 <View
                     style={{
                         backgroundColor: "#FFF",
-                        width: 80,
-                        height: 80,
-                        borderRadius: 80
+                        width: 100,
+                        height: 100,
+                        borderRadius: 100,
+                        borderRadius: 100,
+                        borderWidth: 6,
+                        borderColor: "#AED581"
                     }}
                 />
             </TouchableOpacity>
@@ -134,9 +170,18 @@ const styles = StyleSheet.create({
         fontWeight: "800",
         color: colors.textColorPrimary
     },
+    button: {
+        width: "40%",
+        backgroundColor: "#C5E1A5",
+        marginHorizontal: 16,
+        padding: 4,
+        borderRadius: 4
+    },
     button_text: {
-        color: "#FFF",
-        fontSize: 18
+        color: "#212121",
+        fontSize: 16,
+        fontWeight: "800",
+        textAlign: "center"
     }
 })
 

@@ -4,10 +4,15 @@ import colors from '../../../assets/colors';
 import FastImage from 'react-native-fast-image';
 import { Icon, LinearProgress } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 function Home() {
 
     const navigate = useNavigation();
+
+    const diseaseProdictProps = useSelector(state => state.diseasePredictProps)
+
+    console.log("diseaseProdictProps", diseaseProdictProps)
 
 
     const onClickCamera = () => {
@@ -26,23 +31,26 @@ function Home() {
                     {`Cotton Disease Test\nकपास रोग परीक्षण`}
                 </Text>
                 <View style={styles.image_container}>
-                    {/* <>
-                        <Text style={styles.image_placeholder}>
-                            Using buttons below, Please click cotton leaf picture from camera or choose from gallery.
-                        </Text>
-                        <Text style={styles.image_placeholder}>
-                            कृपया नीचे दिए गए बटन का उपयोग करके कैमरे से कपास के पत्ते की तस्वीर क्लिक करें या गैलरी से चुनें!
-                        </Text>
-                    </> */}
-                    <FastImage
-                        style={styles.image_wrapper}
-                        source={{ uri: "https://df75hwhlfejca.cloudfront.net/cottongrower/wp-content/uploads/2019/07/AL-Cotton-Leaf-Roll-Virus-July2019-Web.jpg" }}
-                    />
+                    {
+                        !!diseaseProdictProps.imageUri ?
+                            <FastImage
+                                style={styles.image_wrapper}
+                                source={{ uri: diseaseProdictProps.imageUri }}
+                            /> : <>
+                                <Text style={styles.image_placeholder}>
+                                    Using buttons below, Please click cotton leaf picture from camera or choose from gallery.
+                                </Text>
+                                <Text style={styles.image_placeholder}>
+                                    कृपया नीचे दिए गए बटन का उपयोग करके कैमरे से कपास के पत्ते की तस्वीर क्लिक करें या गैलरी से चुनें!
+                                </Text>
+                            </>
+                    }
                 </View>
                 <View style={styles.picker_wrapper}>
                     <TouchableOpacity
                         style={styles.button_wrapper}
                         onPress={onClickCamera}
+                        disabled={diseaseProdictProps.loading}
                     >
                         <Icon
                             type={"material-community"}
@@ -54,6 +62,7 @@ function Home() {
                     <TouchableOpacity
                         style={styles.button_wrapper}
                         onPress={onClickGallery}
+                        disabled={diseaseProdictProps.loading}
                     >
                         <Icon
                             type={"material-community"}
@@ -64,69 +73,74 @@ function Home() {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.predict_wrapper}>
-                    <>
-                        <Text style={styles.progress_text}>
-                            {`Testing in progress, Please wait.\nपरीक्षण प्रगति पर है, कृपया प्रतीक्षा करें!`}
-                        </Text>
-                        <LinearProgress
-                            style={styles.predict_progress}
-                            color='#9CCC65'
-                        />
-                    </>
-                    <View style={styles.result_container}>
-                        <View style={styles.result_wrapper}>
-                            <Text style={[
-                                styles.result_text,
-                                { width: "32%", textAlign: "left" }
-                            ]}>
-                                {`Test Prediction\nपरिक्षण अनुमान`}
+                    {diseaseProdictProps.loading ?
+                        <>
+                            <Text style={styles.progress_text}>
+                                {`Testing in progress, Please wait.\nपरीक्षण प्रगति पर है, कृपया प्रतीक्षा करें!`}
                             </Text>
-                            <View
-                                style={{
-                                    width: "15%"
-                                }}
-                            >
-                                <Icon
-                                    type={"material-community"}
-                                    name='arrow-right'
-                                    size={30}
-                                    color={colors.textColorPrimary}
-                                />
+                            <LinearProgress
+                                style={styles.predict_progress}
+                                color='#9CCC65'
+                            />
+                        </> : null
+                    }
+                    {(!diseaseProdictProps.loading && diseaseProdictProps.status && diseaseProdictProps.data) ?
+                        <View style={styles.result_container}>
+                            <View style={styles.result_wrapper}>
+                                <Text style={[
+                                    styles.result_text,
+                                    { width: "32%", textAlign: "left" }
+                                ]}>
+                                    {`Test Prediction\nपरिक्षण अनुमान`}
+                                </Text>
+                                <View
+                                    style={{
+                                        width: "15%"
+                                    }}
+                                >
+                                    <Icon
+                                        type={"material-community"}
+                                        name='arrow-right'
+                                        size={30}
+                                        color={colors.textColorPrimary}
+                                    />
+                                </View>
+                                <Text style={[
+                                    styles.result_text,
+                                    { width: "48%", textAlign: "left" }
+                                ]}>
+                                    {`${diseaseProdictProps.data.english}\n${diseaseProdictProps.data.hindi}`}
+                                </Text>
                             </View>
-                            <Text style={[
-                                styles.result_text,
-                                { width: "48%", textAlign: "left" }
-                            ]}>
-                                {`Healthy Cotton and  test\nस्वस्थ`}
-                            </Text>
-                        </View>
-                        <View style={styles.result_wrapper}>
-                            <Text style={[
-                                styles.result_text,
-                                { width: "32%", textAlign: "left" }
-                            ]}>
-                                {`Test Prediction\nपरिक्षण अनुमान`}
-                            </Text>
-                            <View
-                                style={{
-                                    width: "15%"
-                                }}
-                            >
-                                <Icon
-                                    type={"material-community"}
-                                    name='arrow-right'
-                                    size={30}
-                                    color={colors.textColorPrimary}
-                                />
+                            <View style={styles.result_wrapper}>
+                                <Text style={[
+                                    styles.result_text,
+                                    { width: "32%", textAlign: "left" }
+                                ]}>
+                                    {`Test Prediction\nपरिक्षण अनुमान`}
+                                </Text>
+                                <View
+                                    style={{
+                                        width: "15%"
+                                    }}
+                                >
+                                    <Icon
+                                        type={"material-community"}
+                                        name='arrow-right'
+                                        size={30}
+                                        color={colors.textColorPrimary}
+                                    />
+                                </View>
+                                <Text style={[
+                                    styles.result_text,
+                                    { width: "48%", textAlign: "left" }
+                                ]}>
+                                    {`${diseaseProdictProps.data.probability}%`}
+                                </Text>
                             </View>
-                            <Text style={[
-                                styles.result_text,
-                                { width: "48%", textAlign: "left" }
-                            ]}>
-                                {`Healthy Cotton and  test\nस्वस्थ`}
-                            </Text>
                         </View>
-                    </View>
+                        : null
+                    }
                 </View>
             </View>
         </View>
