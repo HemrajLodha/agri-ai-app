@@ -23,7 +23,6 @@ function Home() {
     }
 
     const clickViewMore = (desc) => {
-        console.log("data desc", desc)
         showAlertMessage(strings.app_name, desc)
     }
 

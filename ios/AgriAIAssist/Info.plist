@@ -64,6 +64,11 @@
 		<string>MaterialCommunityIcons.ttf</string>
 		<string>MaterialIcons.ttf</string>
 		<string>Octicons.ttf</string>
+		<string>Comfortaa-Bold.ttf</string>
+		<string>Comfortaa-Light.ttf</string>
+		<string>Comfortaa-Medium.ttf</string>
+		<string>Comfortaa-Regular.ttf</string>
+		<string>Comfortaa-SemiBold.ttf</string>
 	</array>
 </dict>
 </plist>

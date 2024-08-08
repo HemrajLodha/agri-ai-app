@@ -13,7 +13,7 @@ const initialState = {
 
 export const runApp = createAsyncThunk(ACTION_RUN_APP,
     async (_, thunkApi) => {
-        await delay(5000);
+        await delay(1000 * 5);
         thunkApi.fulfillWithValue({ appRunnig: true });
     }
 )
