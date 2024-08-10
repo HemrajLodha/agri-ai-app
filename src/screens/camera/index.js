@@ -61,11 +61,12 @@ const CameraScreen = () => {
             } else {
                 console.log("permissionStatus", permissionStatus)
                 const cameraPermission = await Camera.requestCameraPermission();
-                if (cameraPermission !== 'authorized') {
+                console.log("cameraPermission request", cameraPermission)
+                if (cameraPermission === 'granted') {
+                    setCameraPermission(true)
+                } else {
                     setCameraPermission(false)
                     console.log('Camera permission not granted!');
-                } else {
-                    setCameraPermission(true)
                 }
             }
         })();

@@ -49,25 +49,30 @@ function Home() {
     }
 
     const onClickGallery = async () => {
-        const permission = checkForStoragePermission();
-        if (permission) {
-            let result = await DocumentPicker.pick({
-                allowMultiSelection: false,
-                type: [
-                    DocumentPicker.types.images
-                ]
-            });
-            if (result?.length > 0) {
-                result = result[0];
-                console.log("onClickGallery", result);
-                const data = { uri: result.uri };
-                dispatch(updateImageUri(result.uri));
-                dispatch(predictCottonDisease(data));
+        try {
+            const permission = checkForStoragePermission();
+            if (permission) {
+                let result = await DocumentPicker.pick({
+                    allowMultiSelection: false,
+                    type: [
+                        DocumentPicker.types.images
+                    ]
+                });
+                if (result?.length > 0) {
+                    result = result[0];
+                    console.log("onClickGallery", result);
+                    const data = { uri: result.uri };
+                    dispatch(updateImageUri(result.uri));
+                    dispatch(predictCottonDisease(data));
+                } else {
+                    showAlertMessage(strings.app_name, `Invalid Image\nअमान्य छवि`);
+                }
             } else {
-                showAlertMessage(strings.app_name, `Invalid Image\nअमान्य छवि`);
+                showAlertMessage(strings.app_name, `Storage permission not given.\nभंडारण की अनुमति नहीं दी गई!`);
             }
-        } else {
-            showAlertMessage(strings.app_name, `Storage permission not given.\nभंडारण की अनुमति नहीं दी गई!`);
+        } catch (error) {
+            console.log("error", error)
+            showAlertMessage(strings.app_name, `Failed to picker image.\nछवि चयन करने में विफल रहे!`);
         }
     }
 
