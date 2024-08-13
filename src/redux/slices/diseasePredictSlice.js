@@ -35,7 +35,7 @@ const cotton_prediction_classes = {
 
 const ACTION_PREDICT_DISEASE = "predict/ACTION_PREDICT_DISEASE";
 
-const post_url = "https://asia-south1-crop-disease-detector-431714.cloudfunctions.net/predict";
+const post_url = "https://asia-south2-crop-disease-detector-431714.cloudfunctions.net/predict";
 
 const initialState = {
     status: false,

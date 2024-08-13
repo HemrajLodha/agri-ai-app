@@ -72,7 +72,7 @@ function Home() {
             }
         } catch (error) {
             console.log("error", error)
-            showAlertMessage(strings.app_name, `Failed to picker image.\nछवि चयन करने में विफल रहे!`);
+            //showAlertMessage(strings.app_name, `Failed to picker image.\nछवि चयन करने में विफल रहे!`);
         }
     }
 
