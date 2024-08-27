@@ -182,7 +182,7 @@ function Home() {
                                                 styles.result_text,
                                                 { width: "32%", textAlign: "left" }
                                             ]}>
-                                                {`Test Prediction\nपरिक्षण अनुमान`}
+                                                {`Prediction %\nअनुमान प्रतिशत`}
                                             </Text>
                                             <View
                                                 style={{
@@ -203,34 +203,6 @@ function Home() {
                                                 {`${diseaseProdictProps.data.probability}%`}
                                             </Text>
                                         </View>
-
-                                        <View style={styles.result_wrapper}>
-                                            <Text style={[
-                                                styles.result_text,
-                                                { width: "32%", textAlign: "left" }
-                                            ]}>
-                                                {`Test Prediction\nपरिक्षण अनुमान`}
-                                            </Text>
-                                            <View
-                                                style={{
-                                                    width: "15%"
-                                                }}
-                                            >
-                                                <Icon
-                                                    type={"material-community"}
-                                                    name='arrow-right'
-                                                    size={30}
-                                                    color={colors.textColorPrimary}
-                                                />
-                                            </View>
-                                            <Text style={[
-                                                styles.result_text,
-                                                { width: "48%", textAlign: "left" }
-                                            ]}>
-                                                {`${diseaseProdictProps.data.probability}%`}
-                                            </Text>
-                                        </View>
-
                                     </View>
                                     <TouchableOpacity
                                         style={styles.detail_wrapper}
@@ -289,7 +261,7 @@ const styles = StyleSheet.create({
     },
     image_placeholder: {
         fontSize: 20,
-        color: colors.textColorPlaceholder,
+        color: "#777",
         textAlign: "center",
         paddingHorizontal: 16,
         marginBottom: 12
